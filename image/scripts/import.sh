@@ -32,6 +32,15 @@ if [ "$1" = 'postgres' ]; then
 
         { echo; echo "host all all 0.0.0.0/0 $authMethod"; } >> "$PGDATA/pg_hba.conf"
 
+
+        # pgtune
+        if ! /opt/pgtune/pgtune -i $PGDATA/postgresql.conf -o $PGDATA/postgresql.conf.pgtune && mv $PGDATA/postgresql.conf $PGDATA/postgresql.conf.bak && cp $PGDATA/postgresql.conf.pgtune $PGDATA/postgresql.conf
+        then
+            echo "Error in pgtune"
+        fi
+
+
+
         # internal start of server in order to allow set-up using psql-client       
         # does not listen on external TCP/IP and waits until start finishes
         gosu postgres pg_ctl -D "$PGDATA" \
